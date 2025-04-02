@@ -1,9 +1,9 @@
 #!/bin/bash
 
-if [[ "$(basename $(pwd))" == "laravel" ]]; then
+if [[ "$(basename $(pwd))" == "igniter" ]]; then
     cd ..
     ./exec "$@"
-    cd laravel
+    cd igniter
     exit
 fi
 

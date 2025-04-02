@@ -5,7 +5,7 @@ services:
             context: docker_build
         working_dir: /var/www
         volumes:
-            - ./laravel/:/var/www
+            - ./igniter/:/var/www
         depends_on:
             - database
         ports:

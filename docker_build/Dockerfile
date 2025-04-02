@@ -1,9 +1,12 @@
 FROM composer AS composer
 
 
-FROM php:8.2-apache
+FROM php:8.2-cli
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
+
+WORKDIR /app
+RUN cd /app
 COPY . .
 
 RUN apt-get update \
@@ -19,12 +22,6 @@ RUN apt-get update \
     && docker-php-ext-enable "$(cat enable_ext | head -n 1)" || true \
     && docker-php-ext-enable "$(cat install_ext | head -n 1)" || true \
     && apt-get autoclean -y \
-    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/lib/apt/lists/*
 
-# Update apache config to point to the *public* directory
-ENV APACHE_DOCUMENT_ROOT=/var/www/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-
-# Enable headers module
-RUN a2enmod rewrite headers
+CMD php spark serve --port 80 --host 0.0.0.0

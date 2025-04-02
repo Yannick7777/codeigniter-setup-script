@@ -1,27 +1,42 @@
 #!/bin/bash
 
-if [[ "$(basename $(pwd))" == "laravel" ]]; then
+docker compose down
+
+if [[ "$(basename $(pwd))" == "igniter" ]]; then
     cd ..
     ./setup
-    cd laravel
+    cd igniter
     exit
 fi
 
 docker compose down
 
-for executable in start stop setup exec art switch-branch-migrate; do
-    ln -sf ../$executable laravel/$executable
-done
-
 dockerUID=$(id -u)
 dockerGID=$(id -g)
 
 mkdir dbdata &> /dev/null
+mkdir igniter &> /dev/null
 
 echo "Container build in progress.."
 composer_docker_hash=$(docker build -q docker_build)
-docker run --user $dockerUID:$dockerGID --rm -v ./laravel:/var/www/html -it $composer_docker_hash composer install
-cp env_docker laravel/.env
+if [ ! -f igniter/composer.json ]; then
+    docker run --user $dockerUID:$dockerGID --rm -v ./igniter:/app -it $composer_docker_hash composer create-project codeigniter4/appstarter tmp
+    mv igniter/tmp/* igniter
+    mv igniter/tmp/.* igniter
+fi
+
+if [ ! -f igniter/.gitignore ]; then
+    touch igniter/.gitignore
+fi
+
+for executable in start stop setup exec spark-exec switch-branch-migrate; do
+    if ! grep -q $executable igniter/.gitignore; then
+        echo "${executable}" >> igniter/.gitignore
+    fi
+    ln -sf ../$executable igniter/$executable
+done
+
+docker run --user $dockerUID:$dockerGID --rm -v ./igniter:/app -it $composer_docker_hash composer install
 cp env_docker .env
 echo "dockerUID=$dockerUID" >> .env
 echo "dockerGID=$dockerGID" >> .env
@@ -35,28 +50,19 @@ if [ -z "$(ls -A dbdata)" ]; then
     docker compose down database &> /dev/null
 fi
 
-docker compose up database -d &> /dev/null
-while ! docker compose logs database | grep -q 'mysqld: ready for connections'; do
-    sleep 0.5
-done
-docker compose down database &> /dev/null
-
 docker compose up -d
 
 echo "Waiting for app to start up..."
-while ! docker compose logs app | grep -q 'Command line: '; do
+while ! docker compose logs app | grep -q 'Development Server'; do
     sleep 0.5
 done
 
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan config:cache
 
 echo "Waiting for database to start up..."
-while ! docker compose logs database | grep -q 'mysqld: ready for connections'; do
+while ! docker compose logs database | grep -q 'mysqld: ready for connections' ; do
     echo "not ready.."
     sleep 0.5
 done
 
-docker compose exec app php artisan migrate:fresh --seed
-docker compose exec app php artisan test
+# docker compose exec app php spark
 docker compose down

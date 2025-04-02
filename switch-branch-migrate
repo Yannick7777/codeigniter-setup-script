@@ -1,15 +1,15 @@
 #!/bin/bash
 
-if [[ "$(basename $(pwd))" == "laravel" ]]; then
+if [[ "$(basename $(pwd))" == "igniter" ]]; then
     cd ..
     ./switch-branch-migrate "$@"
-    cd laravel
+    cd igniter
     exit
 fi
 
 branch_name=$1
 
-cd laravel
+cd igniter
 
 if git show-ref --verify --quiet refs/heads/"$branch_name"; then
     git checkout "$branch_name"
@@ -19,4 +19,4 @@ fi
 
 cd ..
 
-docker compose exec app php artisan migrate:fresh --seed
+docker compose exec app php spark # migrate

@@ -2,9 +2,9 @@
 
 if [[ "$(basename $(pwd))" == "igniter" ]]; then
     cd ..
-    ./start
+    ./art "$@"
     cd igniter
     exit
 fi
 
-docker compose up
+docker compose exec -it app php spark $@
