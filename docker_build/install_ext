@@ -1,0 +1,2 @@
+
+#list additional PHP extensions to be installed inside the container on the first line only

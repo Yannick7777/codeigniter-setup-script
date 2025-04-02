@@ -1,0 +1,48 @@
+services:
+    # Application & web server
+    app:
+        build:
+            context: docker_build
+        working_dir: /var/www
+        volumes:
+            - ./laravel/:/var/www
+        depends_on:
+            - database
+        ports:
+          - ${SETUP_APP_PORT:-80}:80
+        user: ${dockerUID}:${dockerGID}
+    # Database
+    database:
+        image: mysql:8
+        volumes:
+            - ./dbdata:/var/lib/mysql
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PORT: ${DB_PORT}
+        ports:
+            - "33061:3306"
+        user: ${dockerUID}:${dockerGID}
+    # Database management
+    pma:
+        image: phpmyadmin:latest
+        environment:
+            - PMA_ARBITRARY=1
+            - PMA_HOST=${DB_HOST}
+            - PMA_USER=${DB_USERNAME}
+            - PMA_PASSWORD=${DB_PASSWORD}
+            - PMA_PORT=${DB_PORT}
+        depends_on:
+            - database
+        ports:
+          - ${SETUP_PMA_PORT:-8888}:80
+    # Mailing Server
+#    mailhog:
+#        image: mailhog/mailhog
+#        logging:
+#            driver: 'none'
+#        ports:
+#            - 1025:1025
+#            - 8025:8025

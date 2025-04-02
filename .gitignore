@@ -1,0 +1,11 @@
+.env
+/dbdata
+/.vscode
+/.fleet
+/.idea
+/.nova
+/.zed
+.idea
+
+
+laravel/

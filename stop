@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [[ "$(basename $(pwd))" == "laravel" ]]; then
+    cd ..
+    ./stop
+    cd laravel
+    exit
+fi
+
+docker compose down

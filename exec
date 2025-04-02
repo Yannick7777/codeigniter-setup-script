@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [[ "$(basename $(pwd))" == "laravel" ]]; then
+    cd ..
+    ./exec "$@"
+    cd laravel
+    exit
+fi
+
+docker compose exec -it app $@

@@ -1,0 +1,62 @@
+#!/bin/bash
+
+if [[ "$(basename $(pwd))" == "laravel" ]]; then
+    cd ..
+    ./setup
+    cd laravel
+    exit
+fi
+
+docker compose down
+
+for executable in start stop setup exec art switch-branch-migrate; do
+    ln -sf ../$executable laravel/$executable
+done
+
+dockerUID=$(id -u)
+dockerGID=$(id -g)
+
+mkdir dbdata &> /dev/null
+
+echo "Container build in progress.."
+composer_docker_hash=$(docker build -q docker_build)
+docker run --user $dockerUID:$dockerGID --rm -v ./laravel:/var/www/html -it $composer_docker_hash composer install
+cp env_docker laravel/.env
+cp env_docker .env
+echo "dockerUID=$dockerUID" >> .env
+echo "dockerGID=$dockerGID" >> .env
+
+if [ -z "$(ls -A dbdata)" ]; then
+    echo "Initialising database.."
+    docker compose up database -d &> /dev/null
+    while ! docker compose logs database | grep -q 'mysqld: ready for connections'; do
+        sleep 0.5
+    done
+    docker compose down database &> /dev/null
+fi
+
+docker compose up database -d &> /dev/null
+while ! docker compose logs database | grep -q 'mysqld: ready for connections'; do
+    sleep 0.5
+done
+docker compose down database &> /dev/null
+
+docker compose up -d
+
+echo "Waiting for app to start up..."
+while ! docker compose logs app | grep -q 'Command line: '; do
+    sleep 0.5
+done
+
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan config:cache
+
+echo "Waiting for database to start up..."
+while ! docker compose logs database | grep -q 'mysqld: ready for connections'; do
+    echo "not ready.."
+    sleep 0.5
+done
+
+docker compose exec app php artisan migrate:fresh --seed
+docker compose exec app php artisan test
+docker compose down

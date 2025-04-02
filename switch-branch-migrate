@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [[ "$(basename $(pwd))" == "laravel" ]]; then
+    cd ..
+    ./switch-branch-migrate "$@"
+    cd laravel
+    exit
+fi
+
+branch_name=$1
+
+cd laravel
+
+if git show-ref --verify --quiet refs/heads/"$branch_name"; then
+    git checkout "$branch_name"
+else
+    git checkout -b "$branch_name"
+fi
+
+cd ..
+
+docker compose exec app php artisan migrate:fresh --seed
