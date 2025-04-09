@@ -1,3 +1,6 @@
+## DISCLAIMER
+This is the documentation of the original Script I wrote for Laravel. Many of the things here do apply to the setup with codeigniter as well, definitely not all though. This documentation will be adapted as soon as development slows down as the name of the scripts and their content are still subject to change.
+
 ## Idea
 This Project aims to simplify setting up a laravel project in a local development environment for new and experienced developers.
 
