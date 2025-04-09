@@ -20,7 +20,7 @@ RUN apt-get update \
 RUN apt-get update \
     && apt-get install -y "$(cat add_pkgs | head -n 1)" || true \
     && docker-php-ext-install "$(cat install_ext | head -n 1)" || true \
-    && docker-php-ext-enable "$(cat enable_ext | head -n 0)" || true \
+    && docker-php-ext-enable "$(cat enable_ext | head -n 1)" || true \
     && apt-get autoclean -y \
     && rm -rf /var/lib/apt/lists/*
 
