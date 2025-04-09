@@ -7,7 +7,7 @@ DB_PASSWORD=igniter-password
 
 database.default.hostname = database
 database.default.database = igniter
-database.default.username = igniter-user
+database.default.username = root
 database.default.password = igniter-password
 database.default.DBDriver = MySQLi
 database.default.port = 3306
