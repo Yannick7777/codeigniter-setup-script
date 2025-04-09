@@ -2,7 +2,7 @@
 
 if [[ "$(basename $(pwd))" == "igniter" ]]; then
     cd ..
-    ./art "$@"
+    ./spark-exec "$@"
     cd igniter
     exit
 fi
