@@ -45,6 +45,7 @@ done
 
 docker run --user $dockerUID:$dockerGID --rm -v ./igniter:/app -it $composer_docker_hash composer install
 cp env_docker .env
+cp env_docker igniter/.env
 echo "dockerUID=$dockerUID" >> .env
 echo "dockerGID=$dockerGID" >> .env
 

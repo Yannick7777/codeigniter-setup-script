@@ -124,6 +124,7 @@ nb-configuration.xml
 
 /results/
 /phpunit*.xml
+# Codeigniter Setup Script
 start
 stop
 setup
