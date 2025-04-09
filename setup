@@ -31,6 +31,13 @@ fi
 
 for executable in start stop setup exec spark-exec switch-branch-migrate; do
     if ! grep -q $executable igniter/.gitignore; then
+        echo "# Codeigniter Setup Script" >> igniter/.gitignore
+        break
+    fi
+done
+
+for executable in start stop setup exec spark-exec switch-branch-migrate; do
+    if ! grep -q $executable igniter/.gitignore; then
         echo "${executable}" >> igniter/.gitignore
     fi
     ln -sf ../$executable igniter/$executable
