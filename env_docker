@@ -13,5 +13,5 @@ database.default.DBDriver = MySQLi
 database.default.port = 3306
 CI_ENVIRONMENT = development
 
-SETUP_APP_PORT=80
+SETUP_APP_PORT=8080
 SETUP_PMA_PORT=8888

@@ -18,11 +18,12 @@ mkdir dbdata &> /dev/null
 mkdir igniter &> /dev/null
 
 echo "Container build in progress.."
-composer_docker_hash=$(docker build -q docker_build)
+docker build -q docker_build -t script_igniter
 if [ ! -f igniter/composer.json ]; then
-    docker run --user $dockerUID:$dockerGID --rm -v ./igniter:/app -it $composer_docker_hash composer create-project codeigniter4/appstarter tmp
+    docker run --user $dockerUID:$dockerGID --rm -v ./igniter:/app -it script_igniter composer create-project codeigniter4/appstarter tmp
     mv igniter/tmp/* igniter
     mv igniter/tmp/.* igniter
+    rmdir igniter/tmp
 fi
 
 if [ ! -f igniter/.gitignore ]; then
@@ -43,7 +44,7 @@ for executable in start stop setup exec spark-exec switch-branch-migrate; do
     ln -sf ../$executable igniter/$executable
 done
 
-docker run --user $dockerUID:$dockerGID --rm -v ./igniter:/app -it $composer_docker_hash composer install
+docker run --user $dockerUID:$dockerGID --rm -v ./igniter:/app -it script_igniter composer install
 cp env_docker .env
 cp env_docker igniter/.env
 echo "dockerUID=$dockerUID" >> .env

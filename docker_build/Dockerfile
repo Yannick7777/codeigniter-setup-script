@@ -22,4 +22,4 @@ RUN apt-get update \
     && apt-get autoclean -y \
     && rm -rf /var/lib/apt/lists/*
 
-CMD php spark serve --port 80 --host 0.0.0.0
+CMD ["php", "spark", "serve", "--port", "80", "--host", "0.0.0.0"]

@@ -19,4 +19,8 @@ fi
 
 cd ..
 
-docker compose exec app php spark # migrate
+seeds=$(ls igniter/Seeds)
+
+docker compose exec app php spark migrate
+docker compose exec app php spark db:seed App &> /dev/null
+

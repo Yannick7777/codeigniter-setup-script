@@ -9,7 +9,7 @@ services:
         depends_on:
             - database
         ports:
-          - ${SETUP_APP_PORT:-80}:80
+          - 127.0.0.1:${SETUP_APP_PORT:-80}:80
         user: ${dockerUID}:${dockerGID}
     # Database
     database:
@@ -22,8 +22,6 @@ services:
             MYSQL_PASSWORD: ${DB_PASSWORD}
             MYSQL_USER: ${DB_USERNAME}
             MYSQL_PORT: ${DB_PORT}
-        ports:
-            - "33061:3306"
         user: ${dockerUID}:${dockerGID}
     # Database management
     pma:
