@@ -1,2 +1,2 @@
-curl
+curl unzip
 #list additional packages to be installed inside the container on the first line only
