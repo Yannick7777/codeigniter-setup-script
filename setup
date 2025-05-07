@@ -47,8 +47,10 @@ done
 docker run --user $dockerUID:$dockerGID --rm -v ./igniter:/app -it script_igniter composer install
 cp env_docker .env
 cp env_docker igniter/.env
+echo "authjwt.keys.default.0.secret = $(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 50 | head -n 1)" >> .env
 echo "dockerUID=$dockerUID" >> .env
 echo "dockerGID=$dockerGID" >> .env
+echo "authjwt.keys.default.0.secret = $(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 50 | head -n 1)"
 
 if [ -z "$(ls -A dbdata)" ]; then
     echo "Initialising database.."
